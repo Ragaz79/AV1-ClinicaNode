@@ -1,0 +1,25 @@
+# Dependências (recriadas com "npm install")
+node_modules/
+
+# Saída do build do TypeScript ("outDir" do tsconfig.json)
+dist/
+
+# Variáveis de ambiente lidas pelo dotenv
+.env
+
+# Banco SQLite do Prisma / better-sqlite3 (dev.db)
+*.db
+*.db-journal
+
+# Client gerado pelo Prisma (recriado com "npx prisma generate")
+src/generated/
+
+# Pastas criadas pelo "prisma skills sync" (postinstall do package.json)
+.agents/
+.claude/
+.cursor/
+.devin/
+
+# Logs e arquivos de sistema
+*.log
+.DS_Store
