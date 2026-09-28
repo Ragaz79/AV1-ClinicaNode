@@ -4,4 +4,5 @@ export interface Paciente {
     cpf: string;
     telefone: string;
     dataNascimento:string;
+    sexo: string;
 }
