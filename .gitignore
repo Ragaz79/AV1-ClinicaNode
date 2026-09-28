@@ -7,9 +7,11 @@ dist/
 # Variáveis de ambiente lidas pelo dotenv
 .env
 
-# Banco SQLite do Prisma / better-sqlite3 (dev.db)
+# Banco SQLite gerado pela API (clinica.db) e seus arquivos temporários
 *.db
 *.db-journal
+*.db-wal
+*.db-shm
 
 # Client gerado pelo Prisma (recriado com "npx prisma generate")
 src/generated/
