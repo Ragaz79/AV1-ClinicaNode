@@ -10,7 +10,9 @@ import { erroHandler } from './middlewares/error-handler';
 const app = express();
 
 app.use(express.json());
+app.get("/", (_request, response) => response.redirect("/visual/"));
 app.use(express.static(path.resolve(process.cwd(), "public")));
+app.use("/visual", express.static(path.resolve(process.cwd(), "visual")));
 
 app.get("/api", (request, response) => {
     return response.status(200).json({

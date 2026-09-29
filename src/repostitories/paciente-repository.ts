@@ -5,6 +5,7 @@ export interface PacienteRepository {
     listar(nome?: string): Paciente[];
     buscarPorId(id: number): Paciente | null;
     buscarPorCpf(cpf: string): Paciente | null;
+    possuiConsultas(id: number): boolean;
     criar(dados: PacienteInput): Paciente;
     atualizar(id: number, dados: PacienteInput): Paciente;
     excluir(id: number): void;

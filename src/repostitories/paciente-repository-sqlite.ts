@@ -84,6 +84,10 @@ export class PacienteRepositorySqlite implements PacienteRepository {
         return paciente ? mapearPaciente(paciente) : null;
     }
 
+    possuiConsultas(id: number): boolean {
+        return db.prepare("SELECT 1 FROM CONSULTA WHERE CON_PAC_ID = ? LIMIT 1").get(id) !== undefined;
+    }
+
 
     criar(dados: PacienteInput): Paciente {
 
