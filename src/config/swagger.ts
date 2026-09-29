@@ -1,6 +1,4 @@
 import swaggerJsdoc from "swagger-jsdoc";
-import path from "node:path";
-
 const swaggerOptions: swaggerJsdoc.Options = {
     definition: {
         openapi: "3.0.0",
@@ -21,6 +19,10 @@ const swaggerOptions: swaggerJsdoc.Options = {
             {
                 name: "Pacientes",
                 description: "Operações relacionadas aos pacientes"
+            },
+            {
+                name: "Consultas",
+                description: "Agendamento de consultas"
             }
         ],
 
@@ -104,7 +106,35 @@ const swaggerOptions: swaggerJsdoc.Options = {
                         }
                     }
                 },
-
+                Consulta: {
+                    type: "object",
+                    properties: {
+                        id: { type: "integer", example: 1 },
+                        pacienteId: { type: "integer", example: 1 },
+                        medicoId: { type: "integer", example: 2 },
+                        dataConsulta: { type: "string", format: "date", example: "2026-10-05" },
+                        horaInicio: { type: "string", example: "10:00" },
+                        horaFim: { type: "string", example: "10:30" },
+                        status: { type: "string", enum: ["a", "r", "c"], example: "a" }
+                    }
+                },
+                ConsultaInput: {
+                    type: "object",
+                    required: ["pacienteId", "medicoId", "dataConsulta", "horaInicio", "horaFim"],
+                    properties: {
+                        pacienteId: { type: "integer", example: 1 },
+                        medicoId: { type: "integer", example: 2 },
+                        dataConsulta: { type: "string", format: "date", example: "2026-10-05" },
+                        horaInicio: { type: "string", example: "10:00" },
+                        horaFim: { type: "string", example: "10:30" },
+                        status: {
+                            type: "string",
+                            enum: ["a", "r", "c"],
+                            example: "a",
+                            description: "a = agendada, r = realizada, c = cancelada. Se não for enviado, começa como a."
+                        }
+                    }
+                },
                 MensagemErro: {
                     type: "object",
                     properties: {
@@ -117,11 +147,10 @@ const swaggerOptions: swaggerJsdoc.Options = {
             }
         }
     },
-
-    apis: [
-        path.resolve(process.cwd(), "src/routes/*.ts"),
-        path.resolve(process.cwd(), "dist/routes/*.js")
-    ]
+     apis: [
+    "./src/routes/*.ts",
+    "./dist/routes/*.js"
+  ]
 };
 
 const swaggerSpec = swaggerJsdoc(swaggerOptions);
