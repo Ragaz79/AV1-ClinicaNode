@@ -19,7 +19,10 @@ export const pacienteInputSchema = z.object({
         .refine(
             valor => new Date(`${valor}T00:00:00`) <= new Date(),
             "a data de nascinento não pode estar no futuro"
-        )
+        ),
+    sexo: z.enum(["M", "F"], {
+        error: "O sexo deve ser M ou F"
+    })
 
 });
 export const pacienteIdSchema = z.object({

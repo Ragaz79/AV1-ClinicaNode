@@ -6,28 +6,18 @@ import tr from "zod/v4/locales/tr.js";
 
 export class PacienteRepositoryMemoria implements PacienteRepository {
 
-    private proximoId = 3;
-    private pacientes: Paciente[] = [
-        {
-            id: 1,
-            nome: "João das neves",
-            cpf: "03525856969",
-            telefone: "24999988555",
-            dataNascimento: "1990-10-04"
-        },
-        {
-            id: 2,
-            nome: "Daynerys Targarian",
-            cpf: "52569852159",
-            telefone: "2485412555",
-            dataNascimento: "1988-11-30"
-        }
-    ];
+    private proximoId = 1;
+
+    private pacientes: Paciente[] = [];
 
     listar(nome?: string): Paciente[] {
         if (!nome) return [...this.pacientes];
-        return this.pacientes.filter(paciente => paciente.nome.toLowerCase()
-            .includes(nome.toLowerCase()))
+
+        return this.pacientes.filter(paciente =>
+            paciente.nome
+                .toLowerCase()
+                .includes(nome.toLowerCase())
+        );
     }
 
     buscarPorId(id: number): Paciente | undefined {

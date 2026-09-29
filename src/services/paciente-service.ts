@@ -24,7 +24,7 @@ export class PacienteService {
     atualizar(id: number, dados: PacienteInput){
         this.buscarPorId(id);
         const mesmoCpf = this.repository.buscarPorCpf(dados.cpf);
-        if (mesmoCpf && mesmoCpf.id === id){
+        if (mesmoCpf && mesmoCpf.id !== id){
             throw new AppError("CPF pertence a outro paciente", 409);
         }
         return this.repository.atualizar(id, dados);
