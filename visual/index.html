@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f8f9fa">
+  <title>Clínica</title>
+  <link rel="stylesheet" href="/visual/styles.css">
+  <script src="/visual/app.js" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#pacientes" aria-label="Clínica, início">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M10 4h4v6h6v4h-6v6h-4v-6H4v-4h6V4Z" fill="currentColor"/></svg>
+      </span>
+      <span>Clínica</span>
+    </a>
+
+    <nav class="main-nav" aria-label="Cadastros">
+      <a href="#pacientes" data-section="pacientes">Pacientes</a>
+      <a href="#medicos" data-section="medicos">Médicos</a>
+      <a href="#consultas" data-section="consultas">Consultas</a>
+    </nav>
+
+    <a class="docs-link" href="/docs" target="_blank" rel="noreferrer">API</a>
+  </header>
+
+  <main class="page-shell">
+    <div class="page-heading">
+      <div>
+        <h1 id="page-title">Pacientes</h1>
+        <p id="page-description">Consulte e mantenha os cadastros de pacientes.</p>
+      </div>
+      <button class="button button-primary" id="new-record" type="button">Novo paciente</button>
+    </div>
+
+    <section class="workspace" aria-label="Registros">
+      <div class="toolbar">
+        <label class="search-box">
+          <span class="search-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none"><circle cx="10.8" cy="10.8" r="6.8" stroke="currentColor" stroke-width="1.8"/><path d="m16 16 4.4 4.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          </span>
+          <span class="sr-only">Buscar registros</span>
+          <input id="search" type="search" autocomplete="off" placeholder="Buscar pacientes">
+        </label>
+        <span class="record-count" id="record-count" aria-live="polite">0 pacientes</span>
+      </div>
+
+      <div class="table-scroll" id="table-scroll" hidden>
+        <table>
+          <thead id="table-head"></thead>
+          <tbody id="table-body"></tbody>
+        </table>
+      </div>
+
+      <div class="state-panel" id="loading-state" role="status">Carregando...</div>
+      <div class="state-panel" id="empty-state" hidden></div>
+      <div class="state-panel state-error" id="error-state" role="alert" hidden>
+        <p id="error-message"></p>
+        <button class="button button-secondary" id="retry-load" type="button">Tentar novamente</button>
+      </div>
+    </section>
+  </main>
+
+  <dialog class="dialog" id="form-dialog" aria-labelledby="form-title">
+    <form id="record-form" novalidate>
+      <div class="dialog-heading">
+        <div>
+          <h2 id="form-title">Novo cadastro</h2>
+          <p id="form-description">Preencha os dados abaixo.</p>
+        </div>
+        <button class="close-button" id="close-form" type="button" aria-label="Fechar">×</button>
+      </div>
+      <div class="form-grid" id="form-fields"></div>
+      <p class="form-error" id="form-error" role="alert" hidden></p>
+      <div class="dialog-actions">
+        <button class="button button-secondary" id="cancel-form" type="button">Cancelar</button>
+        <button class="button button-primary" id="save-record" type="submit">Salvar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog class="dialog dialog-small" id="delete-dialog" aria-labelledby="delete-title">
+    <div class="dialog-heading">
+      <div>
+        <h2 id="delete-title">Excluir cadastro?</h2>
+        <p id="delete-description"></p>
+      </div>
+      <button class="close-button" id="close-delete" type="button" aria-label="Fechar">×</button>
+    </div>
+    <p class="form-error" id="delete-error" role="alert" hidden></p>
+    <div class="dialog-actions">
+      <button class="button button-secondary" id="cancel-delete" type="button">Cancelar</button>
+      <button class="button button-danger" id="confirm-delete" type="button">Excluir</button>
+    </div>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+</body>
+</html>

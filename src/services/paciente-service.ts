@@ -1,6 +1,5 @@
-import da from "zod/v4/locales/da.js";
-import { AppError } from "../errors/app-error"; 
-import { PacienteRepository } from "../repostitories/paciente-repository";  
+import { AppError } from "../errors/app-error";
+import { PacienteRepository } from "../repostitories/paciente-repository";
 import { PacienteInput } from "../schemas/paciente-schema";
 
 export class PacienteService {
@@ -16,7 +15,7 @@ export class PacienteService {
     }
     criar(dados: PacienteInput){
         if (this.repository.buscarPorCpf(dados.cpf)) {
-            throw new AppError("CPF já cadastrado");            
+            throw new AppError("CPF já cadastrado", 409);
         }
         return this.repository.criar(dados);
     }
@@ -24,15 +23,17 @@ export class PacienteService {
     atualizar(id: number, dados: PacienteInput){
         this.buscarPorId(id);
         const mesmoCpf = this.repository.buscarPorCpf(dados.cpf);
-        if (mesmoCpf && mesmoCpf.id === id){
+        if (mesmoCpf && mesmoCpf.id !== id){
             throw new AppError("CPF pertence a outro paciente", 409);
         }
         return this.repository.atualizar(id, dados);
     }
     excluir(id: number){
         this.buscarPorId(id);
+        if (this.repository.possuiConsultas(id)) {
+            throw new AppError("Este paciente tem consultas vinculadas e não pode ser excluído", 409);
+        }
         this.repository.excluir(id);
-
-    }    
+    }
 }
 
