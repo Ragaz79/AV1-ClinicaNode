@@ -4,10 +4,10 @@ CREATE TABLE IF NOT EXISTS PACIENTE (
     PAC_CPF             CHAR(11)     NOT NULL,
     PAC_TELEFONE        VARCHAR(20)  NOT NULL,
     PAC_DATANASCIMENTO  DATE         NOT NULL,
-    PAC_SEXO            CHAR(1)      NOT NULL, -- m = masculino, f = feminino
+    PAC_SEXO            CHAR(1)      NOT NULL, -- M = masculino, F = feminino
 
     CONSTRAINT UQ_PAC_CPF   UNIQUE (PAC_CPF),
-    CONSTRAINT CK_PAC_SEXO  CHECK (PAC_SEXO IN ('m', 'f'))
+    CONSTRAINT CK_PAC_SEXO  CHECK (PAC_SEXO IN ('M', 'F'))
 );
 
 CREATE TABLE IF NOT EXISTS MEDICO (

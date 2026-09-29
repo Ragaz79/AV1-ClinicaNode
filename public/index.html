@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clínica | Pacientes</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <header class="topbar">
+        <div class="brand">
+            <span class="brand-mark" aria-hidden="true">C</span>
+            <div>
+                <strong>Clínica</strong>
+                <span>Gestão de pacientes</span>
+            </div>
+        </div>
+        <nav aria-label="Links principais">
+            <a href="/docs" target="_blank" rel="noreferrer">Documentação da API</a>
+        </nav>
+    </header>
+
+    <main>
+        <section class="page-heading">
+            <div>
+                <p class="eyebrow">PACIENTES</p>
+                <h1>Pacientes cadastrados</h1>
+            </div>
+            <button class="button button-primary" id="novo-paciente" type="button">
+                <span aria-hidden="true">+</span>
+                Novo paciente
+            </button>
+        </section>
+
+        <section class="workspace" aria-labelledby="lista-titulo">
+            <div class="toolbar">
+                <div class="search-field">
+                    <label for="busca">Buscar por nome</label>
+                    <input id="busca" type="search" placeholder="Digite um nome" autocomplete="off">
+                </div>
+                <p id="contador" class="counter" aria-live="polite">0 pacientes</p>
+            </div>
+
+            <h2 id="lista-titulo" class="sr-only">Lista de pacientes</h2>
+            <div id="estado-carregando" class="status-view">Carregando pacientes...</div>
+            <div id="estado-vazio" class="status-view" hidden>
+                <strong>Nenhum paciente encontrado</strong>
+                <span>Cadastre um paciente ou altere o termo da busca.</span>
+            </div>
+
+            <div id="tabela-container" class="table-container" hidden>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Paciente</th>
+                            <th>CPF</th>
+                            <th>Telefone</th>
+                            <th>Nascimento</th>
+                            <th>Sexo</th>
+                            <th class="actions-heading">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pacientes-grid"></tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <dialog id="form-dialog" class="modal">
+        <form id="paciente-form" novalidate>
+            <div class="modal-header">
+                <div>
+                    <p class="eyebrow" id="form-contexto">NOVO CADASTRO</p>
+                    <h2 id="form-titulo">Cadastrar paciente</h2>
+                </div>
+                <button class="icon-button" id="fechar-form" type="button" aria-label="Fechar">×</button>
+            </div>
+
+            <div class="form-grid">
+                <div class="field field-wide">
+                    <label for="nome">Nome completo</label>
+                    <input id="nome" name="nome" type="text" maxlength="100" autocomplete="name" required>
+                    <small class="field-error" data-error-for="nome"></small>
+                </div>
+                <div class="field">
+                    <label for="cpf">CPF</label>
+                    <input id="cpf" name="cpf" type="text" inputmode="numeric" maxlength="14" autocomplete="off" required>
+                    <small class="field-error" data-error-for="cpf"></small>
+                </div>
+                <div class="field">
+                    <label for="telefone">Telefone</label>
+                    <input id="telefone" name="telefone" type="tel" maxlength="20" autocomplete="tel" required>
+                    <small class="field-error" data-error-for="telefone"></small>
+                </div>
+                <div class="field">
+                    <label for="dataNascimento">Data de nascimento</label>
+                    <input id="dataNascimento" name="dataNascimento" type="date" required>
+                    <small class="field-error" data-error-for="dataNascimento"></small>
+                </div>
+                <fieldset class="field sex-field">
+                    <legend>Sexo</legend>
+                    <div class="segmented-control">
+                        <label><input type="radio" name="sexo" value="F" required><span>Feminino</span></label>
+                        <label><input type="radio" name="sexo" value="M" required><span>Masculino</span></label>
+                    </div>
+                    <small class="field-error" data-error-for="sexo"></small>
+                </fieldset>
+            </div>
+
+            <p id="form-error" class="form-message" role="alert" hidden></p>
+            <div class="modal-actions">
+                <button class="button button-secondary" id="cancelar-form" type="button">Cancelar</button>
+                <button class="button button-primary" id="salvar-paciente" type="submit">Salvar paciente</button>
+            </div>
+        </form>
+    </dialog>
+
+    <dialog id="delete-dialog" class="modal modal-small">
+        <div class="modal-header">
+            <div>
+                <p class="eyebrow eyebrow-danger">CONFIRMAR EXCLUSÃO</p>
+                <h2>Excluir paciente?</h2>
+            </div>
+            <button class="icon-button" id="fechar-delete" type="button" aria-label="Fechar">×</button>
+        </div>
+        <p class="delete-copy">O cadastro de <strong id="delete-nome"></strong> será removido permanentemente.</p>
+        <div class="modal-actions">
+            <button class="button button-secondary" id="cancelar-delete" type="button">Cancelar</button>
+            <button class="button button-danger" id="confirmar-delete" type="button">Excluir</button>
+        </div>
+    </dialog>
+
+    <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+    <script src="/app.js" defer></script>
+</body>
+</html>

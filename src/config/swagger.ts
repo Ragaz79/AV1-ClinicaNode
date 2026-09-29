@@ -7,12 +7,14 @@ const swaggerOptions: swaggerJsdoc.Options = {
             version: "1.0.0",
             description: "API desenvolvida nas aulas de Node.js"
         },
+
         servers: [
             {
                 url: "http://localhost:3000",
                 description: "Ambiente de desenvolvimento"
             }
         ],
+
         tags: [
             {
                 name: "Pacientes",
@@ -23,35 +25,84 @@ const swaggerOptions: swaggerJsdoc.Options = {
                 description: "Agendamento de consultas"
             }
         ],
+
         components: {
             schemas: {
+
                 Paciente: {
                     type: "object",
                     properties: {
-                        id: { type: "integer", example: 1 },
-                        nome: { type: "string", example: "Maria Silva" },
-                        cpf: { type: "string", example: "11111111111" },
-                        telefone: { type: "string", example: "21999990001" },
+                        id: {
+                            type: "integer",
+                            example: 1
+                        },
+
+                        nome: {
+                            type: "string",
+                            example: "Maria Silva"
+                        },
+
+                        cpf: {
+                            type: "string",
+                            example: "11111111111"
+                        },
+
+                        telefone: {
+                            type: "string",
+                            example: "21999990001"
+                        },
+
                         dataNascimento: {
                             type: "string",
                             format: "date",
                             example: "1990-05-10"
+                        },
+
+                        sexo: {
+                            type: "string",
+                            enum: ["M", "F"],
+                            example: "F"
                         }
                     }
                 },
+
                 PacienteInput: {
                     type: "object",
-                    required: ["nome", "cpf", "telefone", "dataNascimento"],
+
+                    required: [
+                        "nome",
+                        "cpf",
+                        "telefone",
+                        "dataNascimento",
+                        "sexo"
+                    ],
+
                     properties: {
-                        nome: { type: "string", example: "Ana Oliveira" },
-                        cpf: { type: "string", example: "33333333333" },
-                        telefone: { type: "string", example: "21999990003" },
+                        nome: {
+                            type: "string",
+                            example: "Ana Oliveira"
+                        },
+
+                        cpf: {
+                            type: "string",
+                            example: "33333333333"
+                        },
+
+                        telefone: {
+                            type: "string",
+                            example: "21999990003"
+                        },
+
                         dataNascimento: {
-
-
                             type: "string",
                             format: "date",
                             example: "1995-08-15"
+                        },
+
+                        sexo: {
+                            type: "string",
+                            enum: ["M", "F"],
+                            example: "F"
                         }
                     }
                 },
@@ -101,5 +152,7 @@ const swaggerOptions: swaggerJsdoc.Options = {
     "./dist/routes/*.js"
   ]
 };
+
 const swaggerSpec = swaggerJsdoc(swaggerOptions);
+
 export { swaggerSpec };
