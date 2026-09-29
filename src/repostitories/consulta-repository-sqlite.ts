@@ -42,7 +42,7 @@ export class ConsultaRepositorySqlite implements ConsultaRepository {
         const resultado = db.prepare(`
             INSERT INTO CONSULTA (CON_PAC_ID, CON_MED_ID, CON_DATACONSULTA, CON_HORAINICIO, CON_HORAFIM, CON_STATUS)
             VALUES (@pacienteId, @medicoId, @dataConsulta, @horaInicio, @horaFim, @status)
-        `).run(dados);
+        `).run(this.campos(dados));
         const consulta = this.buscarPorId(Number(resultado.lastInsertRowid));
         if (!consulta) throw new Error("Erro ao criar consulta");
         return consulta;
@@ -58,7 +58,7 @@ export class ConsultaRepositorySqlite implements ConsultaRepository {
                 CON_HORAFIM      = @horaFim,
                 CON_STATUS       = @status
             WHERE CON_ID = @id
-        `).run({ ...dados, id });
+        `).run({ ...this.campos(dados), id });
         if (resultado.changes === 0) return undefined;
         return this.buscarPorId(id);
     }
@@ -86,7 +86,13 @@ export class ConsultaRepositorySqlite implements ConsultaRepository {
               AND CON_HORAINICIO < @horaFim
               AND CON_HORAFIM > @horaInicio
               AND CON_ID <> @ignorarId
-        `).get({ ...dados, ignorarId: ignorarId ?? 0 }) !== undefined;
+        `).get({
+            medicoId: dados.medicoId,
+            dataConsulta: dados.dataConsulta,
+            horaInicio: dados.horaInicio,
+            horaFim: dados.horaFim,
+            ignorarId: ignorarId ?? 0
+        }) !== undefined;
     }
 
     pacienteOcupado(dados: ConsultaInput, ignorarId?: number): boolean {
@@ -98,6 +104,24 @@ export class ConsultaRepositorySqlite implements ConsultaRepository {
               AND CON_HORAINICIO < @horaFim
               AND CON_HORAFIM > @horaInicio
               AND CON_ID <> @ignorarId
-        `).get({ ...dados, ignorarId: ignorarId ?? 0 }) !== undefined;
+        `).get({
+            pacienteId: dados.pacienteId,
+            dataConsulta: dados.dataConsulta,
+            horaInicio: dados.horaInicio,
+            horaFim: dados.horaFim,
+            ignorarId: ignorarId ?? 0
+        }) !== undefined;
+    }
+
+    // Só os campos que o INSERT e o UPDATE usam: o node:sqlite dá erro se o objeto tiver chave a mais.
+    private campos(dados: ConsultaInput) {
+        return {
+            pacienteId: dados.pacienteId,
+            medicoId: dados.medicoId,
+            dataConsulta: dados.dataConsulta,
+            horaInicio: dados.horaInicio,
+            horaFim: dados.horaFim,
+            status: dados.status
+        };
     }
 }
