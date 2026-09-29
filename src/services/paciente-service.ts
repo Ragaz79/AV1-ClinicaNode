@@ -30,6 +30,9 @@ export class PacienteService {
     }
     excluir(id: number){
         this.buscarPorId(id);
+        if (this.repository.possuiConsultas(id)) {
+            throw new AppError("Este paciente tem consultas vinculadas e não pode ser excluído", 409);
+        }
         this.repository.excluir(id);
     }
 }

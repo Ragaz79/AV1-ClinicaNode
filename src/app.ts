@@ -4,12 +4,15 @@ import swaggerUi from 'swagger-ui-express';
 import { swaggerSpec } from './config/swagger';
 import { pacientesRoutes } from './routes/pacientes-routes';
 import { consultasRoutes } from './routes/consultas-routes';
+import { medicosRoutes } from './routes/medicos-routes';
 import { erroHandler } from './middlewares/error-handler';
 
 const app = express();
 
 app.use(express.json());
+app.get("/", (_request, response) => response.redirect("/visual/"));
 app.use(express.static(path.resolve(process.cwd(), "public")));
+app.use("/visual", express.static(path.resolve(process.cwd(), "visual")));
 
 app.get("/api", (request, response) => {
     return response.status(200).json({
@@ -36,6 +39,7 @@ app.use(
 );
 app.use("/pacientes", pacientesRoutes);
 app.use("/consultas", consultasRoutes);
+app.use("/medicos", medicosRoutes);
 app.use(erroHandler);
 
 export { app };

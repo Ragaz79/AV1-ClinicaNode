@@ -23,6 +23,10 @@ const swaggerOptions: swaggerJsdoc.Options = {
             {
                 name: "Consultas",
                 description: "Agendamento de consultas"
+            },
+            {
+                name: "Médicos",
+                description: "Operações relacionadas aos médicos"
             }
         ],
 
@@ -133,6 +137,36 @@ const swaggerOptions: swaggerJsdoc.Options = {
                             example: "a",
                             description: "a = agendada, r = realizada, c = cancelada. Se não for enviado, começa como a."
                         }
+                    }
+                },
+                Medico: {
+                    type: "object",
+                    properties: {
+                        id: { type: "integer", example: 1 },
+                        nome: { type: "string", example: "Marina Costa" },
+                        crm: { type: "string", example: "SP-123456" },
+                        especialidade: { type: "string", example: "Cardiologia" },
+                        dataNascimento: { type: "string", format: "date", example: "1988-06-24" },
+                        telefone: { type: "string", example: "(11) 99999-0000" },
+                        cpf: { type: "string", example: "12345678901" },
+                        plantaoInicio: { type: "string", example: "08:00" },
+                        plantaoFim: { type: "string", example: "17:00" },
+                        sexo: { type: "string", enum: ["m", "f"], example: "f" }
+                    }
+                },
+                MedicoInput: {
+                    type: "object",
+                    required: ["nome", "crm", "especialidade", "dataNascimento", "telefone", "cpf", "plantaoInicio", "plantaoFim", "sexo"],
+                    properties: {
+                        nome: { type: "string", example: "Marina Costa" },
+                        crm: { type: "string", example: "SP-123456" },
+                        especialidade: { type: "string", example: "Cardiologia" },
+                        dataNascimento: { type: "string", format: "date", example: "1988-06-24" },
+                        telefone: { type: "string", example: "(11) 99999-0000" },
+                        cpf: { type: "string", example: "12345678901" },
+                        plantaoInicio: { type: "string", example: "08:00" },
+                        plantaoFim: { type: "string", example: "17:00" },
+                        sexo: { type: "string", enum: ["m", "f"], example: "f" }
                     }
                 },
                 MensagemErro: {

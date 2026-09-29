@@ -3,6 +3,18 @@ import { Consulta } from "../models/consulta";
 import { ConsultaInput } from "../schemas/consulta-schema";
 import { ConsultaRepository } from "./consulta-repository";
 
+function mapearConsulta(registro: Record<string, unknown>): Consulta {
+    return {
+        id: Number(registro.id),
+        pacienteId: Number(registro.pacienteId),
+        medicoId: Number(registro.medicoId),
+        dataConsulta: String(registro.dataConsulta),
+        horaInicio: String(registro.horaInicio),
+        horaFim: String(registro.horaFim),
+        status: registro.status as Consulta["status"]
+    };
+}
+
 // Cada coluna do banco ganha, com AS, o nome que ela tem no TypeScript.
 const SELECT_CONSULTA = `
     SELECT CON_ID           AS id,
@@ -17,19 +29,23 @@ const SELECT_CONSULTA = `
 export class ConsultaRepositorySqlite implements ConsultaRepository {
 
     listar(): Consulta[] {
-        return db.prepare(SELECT_CONSULTA).all() as Consulta[];
+        const consultas = db.prepare(SELECT_CONSULTA).all();
+        return consultas.map(mapearConsulta);
     }
 
     buscarPorId(id: number): Consulta | undefined {
-        return db.prepare(`${SELECT_CONSULTA} WHERE CON_ID = ?`).get(id) as Consulta | undefined;
+        const consulta = db.prepare(`${SELECT_CONSULTA} WHERE CON_ID = ?`).get(id);
+        return consulta ? mapearConsulta(consulta) : undefined;
     }
 
     criar(dados: ConsultaInput): Consulta {
         const resultado = db.prepare(`
             INSERT INTO CONSULTA (CON_PAC_ID, CON_MED_ID, CON_DATACONSULTA, CON_HORAINICIO, CON_HORAFIM, CON_STATUS)
             VALUES (@pacienteId, @medicoId, @dataConsulta, @horaInicio, @horaFim, @status)
-        `).run(dados);
-        return this.buscarPorId(Number(resultado.lastInsertRowid)) as Consulta;
+        `).run(this.campos(dados));
+        const consulta = this.buscarPorId(Number(resultado.lastInsertRowid));
+        if (!consulta) throw new Error("Erro ao criar consulta");
+        return consulta;
     }
 
     atualizar(id: number, dados: ConsultaInput): Consulta | undefined {
@@ -42,7 +58,7 @@ export class ConsultaRepositorySqlite implements ConsultaRepository {
                 CON_HORAFIM      = @horaFim,
                 CON_STATUS       = @status
             WHERE CON_ID = @id
-        `).run({ ...dados, id });
+        `).run({ ...this.campos(dados), id });
         if (resultado.changes === 0) return undefined;
         return this.buscarPorId(id);
     }
@@ -70,7 +86,13 @@ export class ConsultaRepositorySqlite implements ConsultaRepository {
               AND CON_HORAINICIO < @horaFim
               AND CON_HORAFIM > @horaInicio
               AND CON_ID <> @ignorarId
-        `).get({ ...dados, ignorarId: ignorarId ?? 0 }) !== undefined;
+        `).get({
+            medicoId: dados.medicoId,
+            dataConsulta: dados.dataConsulta,
+            horaInicio: dados.horaInicio,
+            horaFim: dados.horaFim,
+            ignorarId: ignorarId ?? 0
+        }) !== undefined;
     }
 
     pacienteOcupado(dados: ConsultaInput, ignorarId?: number): boolean {
@@ -82,6 +104,24 @@ export class ConsultaRepositorySqlite implements ConsultaRepository {
               AND CON_HORAINICIO < @horaFim
               AND CON_HORAFIM > @horaInicio
               AND CON_ID <> @ignorarId
-        `).get({ ...dados, ignorarId: ignorarId ?? 0 }) !== undefined;
+        `).get({
+            pacienteId: dados.pacienteId,
+            dataConsulta: dados.dataConsulta,
+            horaInicio: dados.horaInicio,
+            horaFim: dados.horaFim,
+            ignorarId: ignorarId ?? 0
+        }) !== undefined;
+    }
+
+    // Só os campos que o INSERT e o UPDATE usam: o node:sqlite dá erro se o objeto tiver chave a mais.
+    private campos(dados: ConsultaInput) {
+        return {
+            pacienteId: dados.pacienteId,
+            medicoId: dados.medicoId,
+            dataConsulta: dados.dataConsulta,
+            horaInicio: dados.horaInicio,
+            horaFim: dados.horaFim,
+            status: dados.status
+        };
     }
 }
