@@ -3,6 +3,18 @@ import { Consulta } from "../models/consulta";
 import { ConsultaInput } from "../schemas/consulta-schema";
 import { ConsultaRepository } from "./consulta-repository";
 
+function mapearConsulta(registro: Record<string, unknown>): Consulta {
+    return {
+        id: Number(registro.id),
+        pacienteId: Number(registro.pacienteId),
+        medicoId: Number(registro.medicoId),
+        dataConsulta: String(registro.dataConsulta),
+        horaInicio: String(registro.horaInicio),
+        horaFim: String(registro.horaFim),
+        status: registro.status as Consulta["status"]
+    };
+}
+
 // Cada coluna do banco ganha, com AS, o nome que ela tem no TypeScript.
 const SELECT_CONSULTA = `
     SELECT CON_ID           AS id,
@@ -17,11 +29,13 @@ const SELECT_CONSULTA = `
 export class ConsultaRepositorySqlite implements ConsultaRepository {
 
     listar(): Consulta[] {
-        return db.prepare(SELECT_CONSULTA).all() as Consulta[];
+        const consultas = db.prepare(SELECT_CONSULTA).all();
+        return consultas.map(mapearConsulta);
     }
 
     buscarPorId(id: number): Consulta | undefined {
-        return db.prepare(`${SELECT_CONSULTA} WHERE CON_ID = ?`).get(id) as Consulta | undefined;
+        const consulta = db.prepare(`${SELECT_CONSULTA} WHERE CON_ID = ?`).get(id);
+        return consulta ? mapearConsulta(consulta) : undefined;
     }
 
     criar(dados: ConsultaInput): Consulta {
@@ -29,7 +43,9 @@ export class ConsultaRepositorySqlite implements ConsultaRepository {
             INSERT INTO CONSULTA (CON_PAC_ID, CON_MED_ID, CON_DATACONSULTA, CON_HORAINICIO, CON_HORAFIM, CON_STATUS)
             VALUES (@pacienteId, @medicoId, @dataConsulta, @horaInicio, @horaFim, @status)
         `).run(dados);
-        return this.buscarPorId(Number(resultado.lastInsertRowid)) as Consulta;
+        const consulta = this.buscarPorId(Number(resultado.lastInsertRowid));
+        if (!consulta) throw new Error("Erro ao criar consulta");
+        return consulta;
     }
 
     atualizar(id: number, dados: ConsultaInput): Consulta | undefined {
