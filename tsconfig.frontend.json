@@ -1,0 +1,15 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ES2022",
+    "moduleResolution": "Bundler",
+    "rootDir": "./src/frontend",
+    "outDir": "./public",
+    "lib": ["ES2022", "DOM"],
+    "types": [],
+    "noEmit": false
+  },
+  "include": ["src/frontend/**/*.ts"],
+  "exclude": []
+}

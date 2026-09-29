@@ -3,6 +3,6 @@ export interface Paciente {
     nome: string;
     cpf: string;
     telefone: string;
-    dataNascimento:string;
-    sexo: string;
+    dataNascimento: string;
+    sexo: "M" | "F";
 }

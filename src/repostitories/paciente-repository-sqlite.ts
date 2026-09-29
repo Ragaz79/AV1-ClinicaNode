@@ -3,12 +3,23 @@ import { Paciente } from "../models/paciente";
 import { PacienteInput } from "../schemas/paciente-schema";
 import { PacienteRepository } from "./paciente-repository";
 
+function mapearPaciente(registro: Record<string, unknown>): Paciente {
+    return {
+        id: Number(registro.id),
+        nome: String(registro.nome),
+        cpf: String(registro.cpf),
+        telefone: String(registro.telefone),
+        dataNascimento: String(registro.dataNascimento),
+        sexo: registro.sexo as Paciente["sexo"]
+    };
+}
+
 export class PacienteRepositorySqlite implements PacienteRepository {
 
     listar(nome?: string): Paciente[] {
 
         if (nome) {
-            return db.prepare(`
+            const pacientes = db.prepare(`
                 SELECT
                     PAC_ID AS id,
                     PAC_NOME AS nome,
@@ -18,10 +29,12 @@ export class PacienteRepositorySqlite implements PacienteRepository {
                     PAC_SEXO AS sexo
                 FROM PACIENTE
                 WHERE PAC_NOME LIKE ?
-            `).all(`%${nome}%`) as Paciente[];
+            `).all(`%${nome}%`);
+
+            return pacientes.map(mapearPaciente);
         }
 
-        return db.prepare(`
+        const pacientes = db.prepare(`
             SELECT
                 PAC_ID AS id,
                 PAC_NOME AS nome,
@@ -30,7 +43,9 @@ export class PacienteRepositorySqlite implements PacienteRepository {
                 PAC_DATANASCIMENTO AS dataNascimento,
                 PAC_SEXO AS sexo
             FROM PACIENTE
-        `).all() as Paciente[];
+        `).all();
+
+        return pacientes.map(mapearPaciente);
     }
 
 
@@ -46,9 +61,9 @@ export class PacienteRepositorySqlite implements PacienteRepository {
                 PAC_SEXO AS sexo
             FROM PACIENTE
             WHERE PAC_ID = ?
-        `).get(id) as Paciente | undefined;
+        `).get(id);
 
-        return paciente ?? null;
+        return paciente ? mapearPaciente(paciente) : null;
     }
 
 
@@ -64,9 +79,9 @@ export class PacienteRepositorySqlite implements PacienteRepository {
                 PAC_SEXO AS sexo
             FROM PACIENTE
             WHERE PAC_CPF = ?
-        `).get(cpf) as Paciente | undefined;
+        `).get(cpf);
 
-        return paciente ?? null;
+        return paciente ? mapearPaciente(paciente) : null;
     }
 
 

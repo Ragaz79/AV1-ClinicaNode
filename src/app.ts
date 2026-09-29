@@ -1,4 +1,5 @@
 import express from 'express';
+import path from 'node:path';
 import swaggerUi from 'swagger-ui-express';
 import { swaggerSpec } from './config/swagger';
 import { pacientesRoutes } from './routes/pacientes-routes';
@@ -7,14 +8,15 @@ import { erroHandler } from './middlewares/error-handler';
 const app = express();
 
 app.use(express.json());
+app.use(express.static(path.resolve(process.cwd(), "public")));
 
-app.get("/", (request, response) => {
+app.get("/api", (request, response) => {
     return response.status(200).json({
-        nome: "Api da, Clinica",
-        versao:"1.0.0",
+        nome: "API da Clínica",
+        versao: "1.0.0",
         documentacao: "/docs"
     });
-} );
+});
 
 app.use(
   "/docs",
@@ -33,4 +35,5 @@ app.use(
 );
 app.use("/pacientes", pacientesRoutes);
 app.use(erroHandler);
-export {app}
+
+export { app };

@@ -1,6 +1,5 @@
-import da from "zod/v4/locales/da.js";
-import { AppError } from "../errors/app-error"; 
-import { PacienteRepository } from "../repostitories/paciente-repository";  
+import { AppError } from "../errors/app-error";
+import { PacienteRepository } from "../repostitories/paciente-repository";
 import { PacienteInput } from "../schemas/paciente-schema";
 
 export class PacienteService {
@@ -16,7 +15,7 @@ export class PacienteService {
     }
     criar(dados: PacienteInput){
         if (this.repository.buscarPorCpf(dados.cpf)) {
-            throw new AppError("CPF já cadastrado");            
+            throw new AppError("CPF já cadastrado", 409);
         }
         return this.repository.criar(dados);
     }
@@ -32,7 +31,6 @@ export class PacienteService {
     excluir(id: number){
         this.buscarPorId(id);
         this.repository.excluir(id);
-
-    }    
+    }
 }
 
