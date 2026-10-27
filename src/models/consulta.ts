@@ -6,4 +6,5 @@ export interface Consulta {
     horaInicio: string;
     horaFim: string;
     status: "a" | "r" | "c";
+    usuarioId: number | null;
 }

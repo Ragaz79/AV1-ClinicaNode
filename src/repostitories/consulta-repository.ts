@@ -4,7 +4,7 @@ import { ConsultaInput } from "../schemas/consulta-schema";
 export interface ConsultaRepository {
     listar(): Consulta[];
     buscarPorId(id: number): Consulta | undefined;
-    criar(dados: ConsultaInput): Consulta;
+    criar(dados: ConsultaInput, usuarioId?: number): Consulta;
     atualizar(id: number, dados: ConsultaInput): Consulta | undefined;
     excluir(id: number): boolean;
 

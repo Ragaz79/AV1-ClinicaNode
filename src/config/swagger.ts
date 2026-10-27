@@ -27,6 +27,10 @@ const swaggerOptions: swaggerJsdoc.Options = {
             {
                 name: "Médicos",
                 description: "Operações relacionadas aos médicos"
+            },
+            {
+                name: "Usuários",
+                description: "Usuários que acessam o sistema"
             }
         ],
 
@@ -119,7 +123,13 @@ const swaggerOptions: swaggerJsdoc.Options = {
                         dataConsulta: { type: "string", format: "date", example: "2026-10-05" },
                         horaInicio: { type: "string", example: "10:00" },
                         horaFim: { type: "string", example: "10:30" },
-                        status: { type: "string", enum: ["a", "r", "c"], example: "a" }
+                        status: { type: "string", enum: ["a", "r", "c"], example: "a" },
+                        usuarioId: {
+                            type: "integer",
+                            nullable: true,
+                            example: 1,
+                            description: "Usuário que agendou. A API preenche a partir do login; fica nulo nas consultas antigas."
+                        }
                     }
                 },
                 ConsultaInput: {
@@ -167,6 +177,32 @@ const swaggerOptions: swaggerJsdoc.Options = {
                         plantaoInicio: { type: "string", example: "08:00" },
                         plantaoFim: { type: "string", example: "17:00" },
                         sexo: { type: "string", enum: ["m", "f"], example: "f" }
+                    }
+                },
+                Usuario: {
+                    type: "object",
+                    properties: {
+                        id: { type: "integer", example: 1 },
+                        nome: { type: "string", example: "Recepção" },
+                        email: { type: "string", format: "email", example: "recepcao@clinica.com" }
+                    }
+                },
+                UsuarioInput: {
+                    type: "object",
+                    required: ["nome", "email", "senha"],
+                    properties: {
+                        nome: { type: "string", example: "Recepção" },
+                        email: { type: "string", format: "email", example: "recepcao@clinica.com" },
+                        senha: { type: "string", format: "password", example: "senha123" }
+                    }
+                },
+                UsuarioAtualizacao: {
+                    type: "object",
+                    required: ["nome", "email"],
+                    properties: {
+                        nome: { type: "string", example: "Recepção" },
+                        email: { type: "string", format: "email", example: "recepcao@clinica.com" },
+                        senha: { type: "string", format: "password", description: "Opcional: só envie para trocar a senha." }
                     }
                 },
                 MensagemErro: {

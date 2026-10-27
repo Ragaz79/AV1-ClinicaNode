@@ -15,9 +15,9 @@ export class ConsultaService {
         return consulta;
     }
 
-    criar(dados: ConsultaInput){
+    criar(dados: ConsultaInput, usuarioId?: number){
         this.validarRegras(dados);
-        return this.repository.criar(dados);
+        return this.repository.criar(dados, usuarioId);
     }
 
     atualizar(id: number, dados: ConsultaInput){
