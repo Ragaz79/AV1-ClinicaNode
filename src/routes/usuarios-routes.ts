@@ -8,8 +8,12 @@ import {
 } from "../controllers/usuarios-controller";
 
 import { validar } from "../middlewares/validar";
+import { autenticar } from "../middlewares/autenticar";
 import { usuarioAtualizacaoSchema, usuarioIdSchema, usuarioInputSchema } from "../schemas/usuario-schema";
 const usuariosRoutes = Router();
+
+usuariosRoutes.post("/", validar(usuarioInputSchema, "body"), criarUsuario);
+usuariosRoutes.use(autenticar);
 
 /**
  * @openapi
@@ -59,6 +63,7 @@ usuariosRoutes.get("/:id", validar(usuarioIdSchema, "params"), buscarUsuarioPorI
  * @openapi
  * /usuarios:
  *   post:
+ *     security: []
  *     summary: Cadastra um usuário
  *     tags: [Usuários]
  *     requestBody:
@@ -79,8 +84,6 @@ usuariosRoutes.get("/:id", validar(usuarioIdSchema, "params"), buscarUsuarioPorI
  *       409:
  *         description: Email já cadastrado
  */
-usuariosRoutes.post("/", validar(usuarioInputSchema, "body"), criarUsuario);
-
 /**
  * @openapi
  * /usuarios/{id}:

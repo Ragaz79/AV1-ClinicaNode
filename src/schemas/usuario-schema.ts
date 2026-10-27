@@ -22,6 +22,17 @@ export const usuarioInputSchema = z.object({
 // No PUT a senha é opcional: se não vier, a senha atual continua valendo.
 export const usuarioAtualizacaoSchema = usuarioInputSchema.partial({ senha: true });
 
+export const loginSchema = z.object({
+    email: z
+        .string({ error: "Informe o email" })
+        .trim()
+        .toLowerCase()
+        .pipe(z.email({ error: "Informe um email valido" })),
+    senha: z
+        .string({ error: "Informe a senha" })
+        .min(1, "Informe a senha")
+});
+
 export const usuarioIdSchema = z.object({
     id: z.coerce
         .number({ error: "O id deve ser um número" })
@@ -31,3 +42,4 @@ export const usuarioIdSchema = z.object({
 
 export type UsuarioInput = z.infer<typeof usuarioInputSchema>;
 export type UsuarioAtualizacao = z.infer<typeof usuarioAtualizacaoSchema>;
+export type LoginInput = z.infer<typeof loginSchema>;

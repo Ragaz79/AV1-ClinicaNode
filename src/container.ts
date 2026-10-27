@@ -6,6 +6,7 @@ import { MedicoRepositorySqlite } from "./repostitories/medico-repository-sqlite
 import { MedicoService } from "./services/medico-service";
 import { UsuarioRepositorySqlite } from "./repostitories/usuario-repository-sqlite";
 import { UsuarioService } from "./services/usuario-service";
+import { AuthService } from "./services/auth-service";
 
 
 const pacienteRepository = new PacienteRepositorySqlite();
@@ -16,4 +17,5 @@ const medicoRepository = new MedicoRepositorySqlite();
 export const medicoService = new MedicoService(medicoRepository);
 const usuarioRepository = new UsuarioRepositorySqlite();
 export const usuarioService = new UsuarioService(usuarioRepository);
+export const authService = new AuthService(usuarioRepository);
 

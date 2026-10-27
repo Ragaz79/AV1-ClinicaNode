@@ -15,7 +15,13 @@ const swaggerOptions: swaggerJsdoc.Options = {
             }
         ],
 
+        security: [{ bearerAuth: [] }],
+
         tags: [
+            {
+                name: "Autenticacao",
+                description: "Login e identificacao do usuario autenticado"
+            },
             {
                 name: "Pacientes",
                 description: "Operações relacionadas aos pacientes"
@@ -35,7 +41,23 @@ const swaggerOptions: swaggerJsdoc.Options = {
         ],
 
         components: {
+            securitySchemes: {
+                bearerAuth: {
+                    type: "http",
+                    scheme: "bearer",
+                    bearerFormat: "JWT"
+                }
+            },
             schemas: {
+
+                LoginInput: {
+                    type: "object",
+                    required: ["email", "senha"],
+                    properties: {
+                        email: { type: "string", format: "email", example: "recepcao@clinica.com" },
+                        senha: { type: "string", format: "password", example: "senha123" }
+                    }
+                },
 
                 Paciente: {
                     type: "object",

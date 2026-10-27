@@ -6,7 +6,9 @@ import { pacientesRoutes } from './routes/pacientes-routes';
 import { consultasRoutes } from './routes/consultas-routes';
 import { medicosRoutes } from './routes/medicos-routes';
 import { usuariosRoutes } from './routes/usuarios-routes';
+import { authRoutes } from './routes/auth-routes';
 import { erroHandler } from './middlewares/error-handler';
+import { autenticar } from './middlewares/autenticar';
 
 const app = express();
 
@@ -38,9 +40,10 @@ app.use(
     }
   })
 );
-app.use("/pacientes", pacientesRoutes);
-app.use("/consultas", consultasRoutes);
-app.use("/medicos", medicosRoutes);
+app.use("/auth", authRoutes);
+app.use("/pacientes", autenticar, pacientesRoutes);
+app.use("/consultas", autenticar, consultasRoutes);
+app.use("/medicos", autenticar, medicosRoutes);
 app.use("/usuarios", usuariosRoutes);
 app.use(erroHandler);
 
