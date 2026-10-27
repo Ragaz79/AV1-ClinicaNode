@@ -11,7 +11,8 @@ function mapearConsulta(registro: Record<string, unknown>): Consulta {
         dataConsulta: String(registro.dataConsulta),
         horaInicio: String(registro.horaInicio),
         horaFim: String(registro.horaFim),
-        status: registro.status as Consulta["status"]
+        status: registro.status as Consulta["status"],
+        usuarioId: registro.usuarioId === null ? null : Number(registro.usuarioId)
     };
 }
 
@@ -23,7 +24,8 @@ const SELECT_CONSULTA = `
            CON_DATACONSULTA AS dataConsulta,
            CON_HORAINICIO   AS horaInicio,
            CON_HORAFIM      AS horaFim,
-           CON_STATUS       AS status
+           CON_STATUS       AS status,
+           CON_USU_ID       AS usuarioId
     FROM CONSULTA`;
 
 export class ConsultaRepositorySqlite implements ConsultaRepository {
@@ -38,11 +40,11 @@ export class ConsultaRepositorySqlite implements ConsultaRepository {
         return consulta ? mapearConsulta(consulta) : undefined;
     }
 
-    criar(dados: ConsultaInput): Consulta {
+    criar(dados: ConsultaInput, usuarioId?: number): Consulta {
         const resultado = db.prepare(`
-            INSERT INTO CONSULTA (CON_PAC_ID, CON_MED_ID, CON_DATACONSULTA, CON_HORAINICIO, CON_HORAFIM, CON_STATUS)
-            VALUES (@pacienteId, @medicoId, @dataConsulta, @horaInicio, @horaFim, @status)
-        `).run(this.campos(dados));
+            INSERT INTO CONSULTA (CON_PAC_ID, CON_MED_ID, CON_DATACONSULTA, CON_HORAINICIO, CON_HORAFIM, CON_STATUS, CON_USU_ID)
+            VALUES (@pacienteId, @medicoId, @dataConsulta, @horaInicio, @horaFim, @status, @usuarioId)
+        `).run({ ...this.campos(dados), usuarioId: usuarioId ?? null });
         const consulta = this.buscarPorId(Number(resultado.lastInsertRowid));
         if (!consulta) throw new Error("Erro ao criar consulta");
         return consulta;
