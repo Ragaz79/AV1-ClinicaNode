@@ -6,11 +6,24 @@ import { pacientesRoutes } from './routes/pacientes-routes';
 import { consultasRoutes } from './routes/consultas-routes';
 import { medicosRoutes } from './routes/medicos-routes';
 import { usuariosRoutes } from './routes/usuarios-routes';
+import { authRoutes } from './routes/auth-routes';
 import { erroHandler } from './middlewares/error-handler';
+import { autenticar } from './middlewares/autenticar';
 
 const app = express();
 
 app.use(express.json());
+app.use((request, response, next) => {
+    response.header("Access-Control-Allow-Origin", "*");
+    response.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    response.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+
+    if (request.method === "OPTIONS") {
+        response.sendStatus(204);
+        return;
+    }
+    next();
+});
 app.get("/", (_request, response) => response.redirect("/visual/"));
 app.use(express.static(path.resolve(process.cwd(), "public")));
 app.use("/visual", express.static(path.resolve(process.cwd(), "visual")));
@@ -38,9 +51,10 @@ app.use(
     }
   })
 );
-app.use("/pacientes", pacientesRoutes);
-app.use("/consultas", consultasRoutes);
-app.use("/medicos", medicosRoutes);
+app.use("/auth", authRoutes);
+app.use("/pacientes", autenticar, pacientesRoutes);
+app.use("/consultas", autenticar, consultasRoutes);
+app.use("/medicos", autenticar, medicosRoutes);
 app.use("/usuarios", usuariosRoutes);
 app.use(erroHandler);
 

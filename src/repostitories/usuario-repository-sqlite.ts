@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
 import { db } from "../database/db";
-import { Usuario } from "../models/usuario";
+import { Usuario, UsuarioCredenciais } from "../models/usuario";
 import { UsuarioAtualizacao, UsuarioInput } from "../schemas/usuario-schema";
 import { UsuarioRepository } from "./usuario-repository";
 
@@ -37,6 +37,23 @@ export class UsuarioRepositorySqlite implements UsuarioRepository {
     buscarPorEmail(email: string): Usuario | null {
         const usuario = db.prepare(`${SELECT_USUARIO} WHERE USU_EMAIL = ?`).get(email);
         return usuario ? mapearUsuario(usuario) : null;
+    }
+
+    buscarCredenciaisPorEmail(email: string): UsuarioCredenciais | null {
+        const registro = db.prepare(`
+            SELECT USU_ID AS id,
+                   USU_NOME AS nome,
+                   USU_EMAIL AS email,
+                   USU_SENHA AS senhaHash
+            FROM USUARIO
+            WHERE USU_EMAIL = ?
+        `).get(email);
+
+        if (!registro) return null;
+        return {
+            ...mapearUsuario(registro),
+            senhaHash: String(registro.senhaHash)
+        };
     }
 
     criar(dados: UsuarioInput): Usuario {

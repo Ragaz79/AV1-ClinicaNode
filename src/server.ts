@@ -1,3 +1,4 @@
+import "dotenv/config";
 import "./database/db"; // abre o banco e cria as tabelas ao iniciar
 import { app } from "./app";
 const porta = 3000;

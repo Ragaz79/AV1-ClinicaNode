@@ -15,7 +15,13 @@ const swaggerOptions: swaggerJsdoc.Options = {
             }
         ],
 
+        security: [{ bearerAuth: [] }],
+
         tags: [
+            {
+                name: "Autenticacao",
+                description: "Login e identificacao do usuario autenticado"
+            },
             {
                 name: "Pacientes",
                 description: "Operações relacionadas aos pacientes"
@@ -35,7 +41,23 @@ const swaggerOptions: swaggerJsdoc.Options = {
         ],
 
         components: {
+            securitySchemes: {
+                bearerAuth: {
+                    type: "http",
+                    scheme: "bearer",
+                    bearerFormat: "JWT"
+                }
+            },
             schemas: {
+
+                LoginInput: {
+                    type: "object",
+                    required: ["email", "senha"],
+                    properties: {
+                        email: { type: "string", format: "email", example: "recepcao@clinica.com" },
+                        senha: { type: "string", format: "password", example: "senha123" }
+                    }
+                },
 
                 Paciente: {
                     type: "object",
@@ -129,6 +151,12 @@ const swaggerOptions: swaggerJsdoc.Options = {
                             nullable: true,
                             example: 1,
                             description: "Usuário que agendou. A API preenche a partir do login; fica nulo nas consultas antigas."
+                        },
+                        usuarioNome: {
+                            type: "string",
+                            nullable: true,
+                            example: "Recepção",
+                            description: "Nome do usuário que agendou; nulo quando a consulta antiga não tem responsável."
                         }
                     }
                 },

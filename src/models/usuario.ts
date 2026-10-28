@@ -4,3 +4,7 @@ export interface Usuario {
     nome: string;
     email: string;
 }
+
+export interface UsuarioCredenciais extends Usuario {
+    senhaHash: string;
+}
