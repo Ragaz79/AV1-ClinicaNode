@@ -13,6 +13,17 @@ import { autenticar } from './middlewares/autenticar';
 const app = express();
 
 app.use(express.json());
+app.use((request, response, next) => {
+    response.header("Access-Control-Allow-Origin", "*");
+    response.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    response.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+
+    if (request.method === "OPTIONS") {
+        response.sendStatus(204);
+        return;
+    }
+    next();
+});
 app.get("/", (_request, response) => response.redirect("/visual/"));
 app.use(express.static(path.resolve(process.cwd(), "public")));
 app.use("/visual", express.static(path.resolve(process.cwd(), "visual")));
