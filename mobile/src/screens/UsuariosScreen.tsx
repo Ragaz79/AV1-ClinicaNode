@@ -5,10 +5,10 @@ import { useAuth } from "../context/AuthContext";
 import { Usuario } from "../types";
 
 const fields: FormFieldSpec[] = [
-    { key: "nome", label: "Nome", placeholder: "Nome do usuario", autoCapitalize: "words" },
+    { key: "nome", label: "Nome", placeholder: "Nome do usuário", autoCapitalize: "words" },
     {
         key: "email",
-        label: "Email",
+        label: "E-mail",
         placeholder: "usuario@clinica.com",
         keyboardType: "email-address",
         autoCapitalize: "none"
@@ -17,7 +17,7 @@ const fields: FormFieldSpec[] = [
         key: "senha",
         label: "Senha",
         type: "password",
-        placeholder: "Minimo de 6 caracteres",
+        placeholder: "Mínimo de 6 caracteres",
         editOptional: true,
         autoCapitalize: "none"
     }
@@ -34,8 +34,8 @@ export function UsuariosScreen() {
 
     return (
         <CrudScreen<Usuario>
-            title="Usuarios"
-            singular="Usuario"
+            title="Usuários"
+            singular="Usuário"
             endpoint="/usuarios"
             fields={fields}
             initialValues={initialValues}
@@ -53,8 +53,8 @@ export function UsuariosScreen() {
             renderTitle={item => item.nome}
             renderDetails={item => (
                 <>
-                    <DetailLine label="Email" value={item.email} />
-                    {item.id === usuario?.id && <DetailLine label="Sessao" value="Usuario atual" />}
+                    <DetailLine label="E-mail" value={item.email} />
+                    {item.id === usuario?.id && <DetailLine label="Sessão" value="Usuário atual" />}
                 </>
             )}
             canDelete={item => item.id !== usuario?.id}

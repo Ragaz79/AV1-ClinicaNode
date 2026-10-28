@@ -44,7 +44,7 @@ export async function apiRequest<T>(
         const erro = body as ApiErrorBody | undefined;
         const detalhes = erro?.erros?.map(item => item.mensagem).join("\n");
         throw new ApiError(
-            detalhes || erro?.mensagem || "Nao foi possivel concluir a operacao",
+            detalhes || erro?.mensagem || "Não foi possível concluir a operação",
             response.status,
             erro?.erros
         );

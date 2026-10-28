@@ -45,7 +45,7 @@ export function LoginScreen() {
             setErro(
                 error instanceof ApiError
                     ? error.message
-                    : "Nao foi possivel conectar com a clinica."
+                    : "Não foi possível conectar com a clínica."
             );
         } finally {
             setLoading(false);
@@ -70,7 +70,7 @@ export function LoginScreen() {
                     <View style={styles.brandIcon}>
                         <Ionicons name="medkit" size={32} color="#FFFFFF" />
                     </View>
-                    <Text style={styles.brandName}>Clinica</Text>
+                    <Text style={styles.brandName}>Clínica</Text>
                     <Text style={styles.brandSubtitle}>
                         {cadastro ? "Crie o primeiro acesso" : "Acesse sua conta"}
                     </Text>
@@ -81,6 +81,7 @@ export function LoginScreen() {
                         <View style={styles.group}>
                             <Text style={styles.label}>Nome</Text>
                             <TextInput
+                                accessibilityLabel="Nome"
                                 value={nome}
                                 onChangeText={setNome}
                                 placeholder="Nome completo"
@@ -92,8 +93,9 @@ export function LoginScreen() {
                     )}
 
                     <View style={styles.group}>
-                        <Text style={styles.label}>Email</Text>
+                        <Text style={styles.label}>E-mail</Text>
                         <TextInput
+                            accessibilityLabel="E-mail"
                             value={email}
                             onChangeText={setEmail}
                             placeholder="usuario@clinica.com"
@@ -108,9 +110,10 @@ export function LoginScreen() {
                     <View style={styles.group}>
                         <Text style={styles.label}>Senha</Text>
                         <TextInput
+                            accessibilityLabel="Senha"
                             value={senha}
                             onChangeText={setSenha}
-                            placeholder={cadastro ? "Minimo de 6 caracteres" : "Sua senha"}
+                            placeholder={cadastro ? "Mínimo de 6 caracteres" : "Sua senha"}
                             placeholderTextColor="#8A9694"
                             secureTextEntry
                             autoCapitalize="none"
@@ -127,6 +130,7 @@ export function LoginScreen() {
                     )}
 
                     <Pressable
+                        accessibilityRole="button"
                         disabled={loading}
                         onPress={() => void enviar()}
                         style={({ pressed }) => [
@@ -151,9 +155,9 @@ export function LoginScreen() {
                         )}
                     </Pressable>
 
-                    <Pressable onPress={alternarModo} style={styles.switchButton}>
+                    <Pressable accessibilityRole="button" onPress={alternarModo} style={styles.switchButton}>
                         <Text style={styles.switchText}>
-                            {cadastro ? "Ja tenho uma conta" : "Criar primeiro acesso"}
+                            {cadastro ? "Já tenho uma conta" : "Criar primeiro acesso"}
                         </Text>
                     </Pressable>
                 </View>

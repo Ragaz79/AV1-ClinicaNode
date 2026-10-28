@@ -1,10 +1,10 @@
-import { Alert } from "react-native";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { CrudScreen, FormValues } from "../components/CrudScreen";
 import { DetailLine } from "../components/DetailLine";
 import { FormFieldSpec } from "../components/FormField";
 import { useAuth } from "../context/AuthContext";
 import { ApiError, apiRequest } from "../services/api";
+import { dateFromApi, dateToApi, timeFromApi, timeToApi } from "../utils/dateTime";
 import { Consulta, Medico, Paciente } from "../types";
 
 const statusLabels: Record<Consulta["status"], string> = {
@@ -22,29 +22,49 @@ const initialValues: FormValues = {
     status: "a"
 };
 
+function validarData(value: string) {
+    return dateToApi(value) ? undefined : "Informe uma data válida no formato DD/MM/AAAA.";
+}
+
+function validarHora(value: string) {
+    return timeToApi(value) ? undefined : "Informe um horário válido no formato HH:MM (00:00 a 23:59).";
+}
+
+function formatarData(value: string) {
+    const [year, month, day] = value.split("-");
+    return year && month && day ? `${day}/${month}/${year}` : dateFromApi(value);
+}
+
 export function ConsultasScreen() {
     const { token, sair } = useAuth();
     const [pacientes, setPacientes] = useState<Paciente[]>([]);
     const [medicos, setMedicos] = useState<Medico[]>([]);
+    const [referenciasCarregando, setReferenciasCarregando] = useState(true);
+    const [erroReferencias, setErroReferencias] = useState("");
 
-    useEffect(() => {
-        Promise.all([
-            apiRequest<Paciente[]>("/pacientes", {}, token),
-            apiRequest<Medico[]>("/medicos", {}, token)
-        ]).then(([listaPacientes, listaMedicos]) => {
+    const carregarReferencias = useCallback(async () => {
+        setReferenciasCarregando(true);
+        setErroReferencias("");
+        try {
+            const [listaPacientes, listaMedicos] = await Promise.all([
+                apiRequest<Paciente[]>("/pacientes", {}, token),
+                apiRequest<Medico[]>("/medicos", {}, token)
+            ]);
             setPacientes(listaPacientes);
             setMedicos(listaMedicos);
-        }).catch(async error => {
-            if (error instanceof ApiError && error.status === 401) {
-                await sair();
-                return;
-            }
-            Alert.alert(
-                "Dados indisponiveis",
-                error instanceof Error ? error.message : "Nao foi possivel carregar pacientes e medicos."
-            );
-        });
+        } catch (error) {
+            setErroReferencias(error instanceof Error
+                ? error.message
+                : "Não foi possível carregar pacientes e médicos.");
+            if (error instanceof ApiError && error.status === 401) await sair();
+        } finally {
+            setReferenciasCarregando(false);
+        }
     }, [token, sair]);
+
+    useEffect(() => {
+        void carregarReferencias();
+    }, [carregarReferencias]);
 
     const fields = useMemo<FormFieldSpec[]>(() => [
         {
@@ -55,25 +75,33 @@ export function ConsultasScreen() {
         },
         {
             key: "medicoId",
-            label: "Medico",
+            label: "Médico",
             type: "select",
             options: medicos.map(item => ({
                 label: `${item.nome} - ${item.especialidade}`,
                 value: String(item.id)
             }))
         },
-        { key: "dataConsulta", label: "Data da consulta", placeholder: "AAAA-MM-DD" },
+        {
+            key: "dataConsulta",
+            label: "Data da consulta",
+            type: "date",
+            placeholder: "DD/MM/AAAA",
+            validate: validarData
+        },
         {
             key: "horaInicio",
-            label: "Hora de inicio",
+            label: "Hora de início",
+            type: "time",
             placeholder: "HH:MM",
-            keyboardType: "numbers-and-punctuation"
+            validate: validarHora
         },
         {
             key: "horaFim",
             label: "Hora de fim",
+            type: "time",
             placeholder: "HH:MM",
-            keyboardType: "numbers-and-punctuation"
+            validate: validarHora
         },
         {
             key: "status",
@@ -92,8 +120,20 @@ export function ConsultasScreen() {
     }
 
     function nomeMedico(id: number) {
-        return medicos.find(item => item.id === id)?.nome ?? `Medico #${id}`;
+        return medicos.find(item => item.id === id)?.nome ?? `Médico #${id}`;
     }
+
+    const canCreate = !referenciasCarregando && !erroReferencias && pacientes.length > 0 && medicos.length > 0;
+    const disabledMessage = referenciasCarregando
+        ? "Carregando pacientes e médicos..."
+        : erroReferencias
+            ? `Não foi possível carregar os dados necessários: ${erroReferencias}`
+            : pacientes.length === 0 || medicos.length === 0
+                ? "Cadastre pelo menos um paciente e um médico antes de agendar uma consulta."
+                : undefined;
+    const emptyDescription = erroReferencias
+        ? "Confira a conexão e tente novamente."
+        : "As consultas agendadas aparecerão aqui.";
 
     return (
         <CrudScreen<Consulta>
@@ -102,32 +142,43 @@ export function ConsultasScreen() {
             endpoint="/consultas"
             fields={fields}
             initialValues={initialValues}
+            canCreate={canCreate}
+            createDisabledMessage={disabledMessage}
+            onRetryCreateDisabled={erroReferencias ? () => void carregarReferencias() : undefined}
+            emptyDescription={emptyDescription}
             valuesFromItem={item => ({
                 pacienteId: String(item.pacienteId),
                 medicoId: String(item.medicoId),
-                dataConsulta: item.dataConsulta,
-                horaInicio: item.horaInicio,
-                horaFim: item.horaFim,
+                dataConsulta: dateFromApi(item.dataConsulta),
+                horaInicio: timeFromApi(item.horaInicio),
+                horaFim: timeFromApi(item.horaFim),
                 status: item.status
             })}
             payloadFromValues={values => ({
                 pacienteId: Number(values.pacienteId),
                 medicoId: Number(values.medicoId),
-                dataConsulta: values.dataConsulta,
-                horaInicio: values.horaInicio,
-                horaFim: values.horaFim,
-                status: values.status
+                dataConsulta: dateToApi(values.dataConsulta ?? "") ?? "",
+                horaInicio: timeToApi(values.horaInicio ?? "") ?? "",
+                horaFim: timeToApi(values.horaFim ?? "") ?? "",
+                status: values.status ?? "a"
             })}
-            renderTitle={item => `${item.dataConsulta} as ${item.horaInicio}`}
+            validateValues={(values): Record<string, string> => {
+                const start = timeToApi(values.horaInicio ?? "");
+                const end = timeToApi(values.horaFim ?? "");
+                return start && end && end <= start
+                    ? { horaFim: "A hora de fim deve ser depois da hora de início." }
+                    : {};
+            }}
+            renderTitle={item => `${formatarData(item.dataConsulta)} às ${timeFromApi(item.horaInicio)}`}
             renderDetails={item => (
                 <>
                     <DetailLine label="Paciente" value={nomePaciente(item.pacienteId)} />
-                    <DetailLine label="Medico" value={nomeMedico(item.medicoId)} />
-                    <DetailLine label="Horario" value={`${item.horaInicio} - ${item.horaFim}`} />
+                    <DetailLine label="Médico" value={nomeMedico(item.medicoId)} />
+                    <DetailLine label="Horário" value={`${timeFromApi(item.horaInicio)}–${timeFromApi(item.horaFim)}`} />
                     <DetailLine label="Status" value={statusLabels[item.status]} />
+                    <DetailLine label="Agendado por" value={item.usuarioNome ?? "Não informado"} />
                 </>
             )}
         />
     );
 }
-

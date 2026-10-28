@@ -2,12 +2,23 @@ import { CrudScreen, FormValues } from "../components/CrudScreen";
 import { DetailLine } from "../components/DetailLine";
 import { FormFieldSpec } from "../components/FormField";
 import { Paciente } from "../types";
+import { cpfFromApi, cpfToApi, dateFromApi, dateToApi, phoneFromApi } from "../utils/dateTime";
+
+const validarData = (value: string) => dateToApi(value)
+    ? undefined
+    : "Informe uma data válida no formato DD/MM/AAAA.";
 
 const fields: FormFieldSpec[] = [
     { key: "nome", label: "Nome", placeholder: "Nome completo", autoCapitalize: "words" },
-    { key: "cpf", label: "CPF", placeholder: "Somente 11 numeros", keyboardType: "number-pad" },
-    { key: "telefone", label: "Telefone", placeholder: "(00) 00000-0000", keyboardType: "phone-pad" },
-    { key: "dataNascimento", label: "Data de nascimento", placeholder: "AAAA-MM-DD" },
+    { key: "cpf", label: "CPF", type: "cpf", placeholder: "000.000.000-00" },
+    { key: "telefone", label: "Telefone", type: "phone", placeholder: "(00) 00000-0000" },
+    {
+        key: "dataNascimento",
+        label: "Data de nascimento",
+        type: "date",
+        placeholder: "DD/MM/AAAA",
+        validate: validarData
+    },
     {
         key: "sexo",
         label: "Sexo",
@@ -37,21 +48,24 @@ export function PacientesScreen() {
             initialValues={initialValues}
             valuesFromItem={item => ({
                 nome: item.nome,
-                cpf: item.cpf,
-                telefone: item.telefone,
-                dataNascimento: item.dataNascimento,
+                cpf: cpfFromApi(item.cpf),
+                telefone: phoneFromApi(item.telefone),
+                dataNascimento: dateFromApi(item.dataNascimento),
                 sexo: item.sexo
             })}
-            payloadFromValues={values => values}
+            payloadFromValues={values => ({
+                ...values,
+                cpf: cpfToApi(values.cpf ?? ""),
+                dataNascimento: dateToApi(values.dataNascimento ?? "") ?? ""
+            })}
             renderTitle={item => item.nome}
             renderDetails={item => (
                 <>
-                    <DetailLine label="CPF" value={item.cpf} />
-                    <DetailLine label="Telefone" value={item.telefone} />
-                    <DetailLine label="Nascimento" value={item.dataNascimento} />
+                    <DetailLine label="CPF" value={cpfFromApi(item.cpf)} />
+                    <DetailLine label="Telefone" value={phoneFromApi(item.telefone)} />
+                    <DetailLine label="Nascimento" value={dateFromApi(item.dataNascimento)} />
                 </>
             )}
         />
     );
 }
-

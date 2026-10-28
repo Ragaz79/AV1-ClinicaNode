@@ -10,7 +10,7 @@ export function buscarConsultaPorId(req: Request, res: Response){
 }
 
 export function criarConsulta(req: Request, res: Response){
-    return res.status(201).json(consultaService.criar(req.body));
+    return res.status(201).json(consultaService.criar(req.body, req.usuarioId!));
 }
 
 export function atualizarConsulta(req: Request, res: Response){

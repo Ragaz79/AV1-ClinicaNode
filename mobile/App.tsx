@@ -23,9 +23,9 @@ type Tab = "pacientes" | "medicos" | "consultas" | "usuarios";
 
 const tabs = [
     { key: "pacientes" as const, label: "Pacientes", icon: "people-outline" as const },
-    { key: "medicos" as const, label: "Medicos", icon: "medical-outline" as const },
+    { key: "medicos" as const, label: "Médicos", icon: "medical-outline" as const },
     { key: "consultas" as const, label: "Consultas", icon: "calendar-outline" as const },
-    { key: "usuarios" as const, label: "Usuarios", icon: "person-circle-outline" as const }
+    { key: "usuarios" as const, label: "Usuários", icon: "person-circle-outline" as const }
 ];
 
 function ConteudoAutenticado() {
@@ -34,13 +34,13 @@ function ConteudoAutenticado() {
 
     function confirmarSaida() {
         if (Platform.OS === "web") {
-            if (globalThis.confirm("Deseja encerrar sua sessao?")) {
+            if (globalThis.confirm("Deseja encerrar sua sessão?")) {
                 void sair();
             }
             return;
         }
 
-        Alert.alert("Sair", "Deseja encerrar sua sessao?", [
+        Alert.alert("Sair", "Deseja encerrar sua sessão?", [
             { text: "Cancelar", style: "cancel" },
             { text: "Sair", style: "destructive", onPress: () => void sair() }
         ]);
@@ -66,11 +66,12 @@ function ConteudoAutenticado() {
                 <View style={styles.headerBrand}>
                     <Ionicons name="medkit" size={22} color="#FFFFFF" />
                     <View>
-                        <Text style={styles.brandName}>Clinica</Text>
+                        <Text style={styles.brandName}>Clínica</Text>
                         <Text style={styles.userName} numberOfLines={1}>{usuario?.nome}</Text>
                     </View>
                 </View>
                 <Pressable
+                    accessibilityRole="button"
                     accessibilityLabel="Sair"
                     onPress={confirmarSaida}
                     style={({ pressed }) => [styles.logoutButton, pressed && styles.pressed]}
@@ -88,6 +89,7 @@ function ConteudoAutenticado() {
                         <Pressable
                             key={item.key}
                             accessibilityRole="tab"
+                            accessibilityLabel={item.label}
                             accessibilityState={{ selected: active }}
                             onPress={() => setTab(item.key)}
                             style={({ pressed }) => [

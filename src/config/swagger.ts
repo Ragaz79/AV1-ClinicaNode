@@ -151,6 +151,12 @@ const swaggerOptions: swaggerJsdoc.Options = {
                             nullable: true,
                             example: 1,
                             description: "Usuário que agendou. A API preenche a partir do login; fica nulo nas consultas antigas."
+                        },
+                        usuarioNome: {
+                            type: "string",
+                            nullable: true,
+                            example: "Recepção",
+                            description: "Nome do usuário que agendou; nulo quando a consulta antiga não tem responsável."
                         }
                     }
                 },

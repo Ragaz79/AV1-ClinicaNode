@@ -2,16 +2,42 @@ import { CrudScreen, FormValues } from "../components/CrudScreen";
 import { DetailLine } from "../components/DetailLine";
 import { FormFieldSpec } from "../components/FormField";
 import { Medico } from "../types";
+import { cpfFromApi, cpfToApi, dateFromApi, dateToApi, phoneFromApi, timeFromApi, timeToApi } from "../utils/dateTime";
+
+const validarData = (value: string) => dateToApi(value)
+    ? undefined
+    : "Informe uma data válida no formato DD/MM/AAAA.";
+const validarHora = (value: string) => timeToApi(value)
+    ? undefined
+    : "Informe um horário válido no formato HH:MM (00:00 a 23:59).";
 
 const fields: FormFieldSpec[] = [
     { key: "nome", label: "Nome", placeholder: "Nome completo", autoCapitalize: "words" },
     { key: "crm", label: "CRM", placeholder: "Ex.: SP-123456", autoCapitalize: "characters" },
     { key: "especialidade", label: "Especialidade", placeholder: "Ex.: Cardiologia", autoCapitalize: "words" },
-    { key: "cpf", label: "CPF", placeholder: "Somente 11 numeros", keyboardType: "number-pad" },
-    { key: "telefone", label: "Telefone", placeholder: "(00) 00000-0000", keyboardType: "phone-pad" },
-    { key: "dataNascimento", label: "Data de nascimento", placeholder: "AAAA-MM-DD" },
-    { key: "plantaoInicio", label: "Inicio do plantao", placeholder: "HH:MM", keyboardType: "numbers-and-punctuation" },
-    { key: "plantaoFim", label: "Fim do plantao", placeholder: "HH:MM", keyboardType: "numbers-and-punctuation" },
+    { key: "cpf", label: "CPF", type: "cpf", placeholder: "000.000.000-00" },
+    { key: "telefone", label: "Telefone", type: "phone", placeholder: "(00) 00000-0000" },
+    {
+        key: "dataNascimento",
+        label: "Data de nascimento",
+        type: "date",
+        placeholder: "DD/MM/AAAA",
+        validate: validarData
+    },
+    {
+        key: "plantaoInicio",
+        label: "Início do plantão",
+        type: "time",
+        placeholder: "HH:MM",
+        validate: validarHora
+    },
+    {
+        key: "plantaoFim",
+        label: "Fim do plantão",
+        type: "time",
+        placeholder: "HH:MM",
+        validate: validarHora
+    },
     {
         key: "sexo",
         label: "Sexo",
@@ -38,8 +64,8 @@ const initialValues: FormValues = {
 export function MedicosScreen() {
     return (
         <CrudScreen<Medico>
-            title="Medicos"
-            singular="Medico"
+            title="Médicos"
+            singular="Médico"
             endpoint="/medicos"
             fields={fields}
             initialValues={initialValues}
@@ -47,23 +73,35 @@ export function MedicosScreen() {
                 nome: item.nome,
                 crm: item.crm,
                 especialidade: item.especialidade,
-                cpf: item.cpf,
-                telefone: item.telefone,
-                dataNascimento: item.dataNascimento,
-                plantaoInicio: item.plantaoInicio,
-                plantaoFim: item.plantaoFim,
+                cpf: cpfFromApi(item.cpf),
+                telefone: phoneFromApi(item.telefone),
+                dataNascimento: dateFromApi(item.dataNascimento),
+                plantaoInicio: timeFromApi(item.plantaoInicio),
+                plantaoFim: timeFromApi(item.plantaoFim),
                 sexo: item.sexo
             })}
-            payloadFromValues={values => values}
+            payloadFromValues={values => ({
+                ...values,
+                cpf: cpfToApi(values.cpf ?? ""),
+                dataNascimento: dateToApi(values.dataNascimento ?? "") ?? "",
+                plantaoInicio: timeToApi(values.plantaoInicio ?? "") ?? "",
+                plantaoFim: timeToApi(values.plantaoFim ?? "") ?? ""
+            })}
+            validateValues={(values): Record<string, string> => {
+                const start = timeToApi(values.plantaoInicio ?? "");
+                const end = timeToApi(values.plantaoFim ?? "");
+                return start && end && end <= start
+                    ? { plantaoFim: "O fim do plantão deve ser posterior ao início." }
+                    : {};
+            }}
             renderTitle={item => item.nome}
             renderDetails={item => (
                 <>
                     <DetailLine label="CRM" value={item.crm} />
                     <DetailLine label="Especialidade" value={item.especialidade} />
-                    <DetailLine label="Plantao" value={`${item.plantaoInicio} - ${item.plantaoFim}`} />
+                    <DetailLine label="Plantão" value={`${timeFromApi(item.plantaoInicio)}–${timeFromApi(item.plantaoFim)}`} />
                 </>
             )}
         />
     );
 }
-
